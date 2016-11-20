@@ -26,10 +26,15 @@ function backup(){
 		echo "Fazendo backup de: "$IP
 		echo "Dos diretorios: "$DIRETORIOS
 		DATA=$(date +"%d_%m_%Y_%H_%M")
-		ssh root@$IP "tar -zcf /tmp/${IP}_${DATA}.tar.gz $DIRETORIOS"
+                ARQUIVO=$(ECHO "${ip}_${DATA}.tar.gz")
+		INICIO=$(date +"%Y-%m-%d %H:%M:%S")
+		ssh root@$IP "tar -zcf /tmp/$ARQUIVO $DIRETORIOS"
 		scp root@$IP:/tmp/*.tar.gz /backup/
-		ssh root@$IP "rm -f /tmp/*.tar.gz"	
-	sleep 3
+		ssh root@$IP "rm -f /tmp/*.tar.gz"
+		FIM=$(date +"%Y-%m-%d %H:%M:%S")
+                #----------------------------------
+		mysql -uroot -p123456 bacckup -e "insert into log(inicio,fim,server,arrquivo,status) values('$INICIO','$FIM','$IP','$ARQUIVO','OK')"	
+
 	done
 
 }
